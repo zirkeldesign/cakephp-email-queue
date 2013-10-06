@@ -78,7 +78,7 @@ class EmailQueue extends AppModel {
 			'conditions' => array(
 				'EmailQueue.sent' => false,
 				'EmailQueue.send_tries <=' => 3,
-				'EmailQueue.send_at <=' => gmdate('Y-m-d H:i'),
+				'EmailQueue.send_at <=' => gmdate('Y-m-d H:i:s'),
 				'EmailQueue.locked' => false
 			),
 			'order' => array('EmailQueue.created' => 'ASC')
