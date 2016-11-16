@@ -1,0 +1,5 @@
+{
+    "name": "EmailQueue",
+    "description": "Email Queue plugin for CakePHP",
+    "author": "nodesagency/Alexander Rauser"
+}
