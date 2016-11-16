@@ -1,6 +1,7 @@
 <?php
 
 App::uses('AppModel', 'Model');
+App::uses('EmailQueueConfig', 'EmailQueue.Model');
 
 /**
  * EmailQueue model
@@ -27,7 +28,7 @@ class EmailQueue extends AppModel {
 /**
  * Stores a new email message in the queue
  *
- * @param mixed $to email or array of emails as recipients
+ * @param mixed $to email or array of emails as recipients, or instance of EmailQueueConfig
  * @param array $data associative array of variables to be passed to the email template
  * @param array $options list of options for email sending. Possible keys:
  *
@@ -40,7 +41,7 @@ class EmailQueue extends AppModel {
  *
  * @return void
  */
-	public function enqueue($to, array $data, $options = array()) {
+	public function enqueue($to, array $data = [], $options = array()) {
 		$defaults = array(
 			'subject' => '',
 			'send_at' => gmdate('Y-m-d H:i:s'),
@@ -48,7 +49,10 @@ class EmailQueue extends AppModel {
 			'layout' => 'default',
 			'format' => 'both',
 			'template_vars' => $data,
-			'config' => 'default'
+			'config' => 'default',
+                        'attachments' => [],
+                        'helpers' => [],
+                        'headers' => [],
 		);
 
 		$email = $options + $defaults;
@@ -70,7 +74,7 @@ class EmailQueue extends AppModel {
  * @return array list of unsent emails
  * @access public
  */
-	public function getBatch($size = 10) {
+	public function getBatch($size = 20) {
 		$this->getDataSource()->begin();
 
 		$emails = $this->find('all', array(
@@ -146,6 +150,19 @@ class EmailQueue extends AppModel {
 		if (isset($this->data[$this->alias]['template_vars'])) {
 			$this->data[$this->alias]['template_vars'] = json_encode($this->data[$this->alias]['template_vars']);
 		}
+                
+                if (isset($this->data[$this->alias]['headers'])) {
+			$this->data[$this->alias]['headers'] = json_encode($this->data[$this->alias]['headers']);
+		}
+                
+                if (isset($this->data[$this->alias]['helpers'])) {
+			$this->data[$this->alias]['helpers'] = json_encode($this->data[$this->alias]['helpers']);
+		}
+                
+                if (isset($this->data[$this->alias]['attachments'])) {
+			$this->data[$this->alias]['attachments'] = json_encode($this->data[$this->alias]['attachments']);
+		}
+                
 
 		return parent::beforeSave($options);
 	}
@@ -163,10 +180,19 @@ class EmailQueue extends AppModel {
 		}
 
 		foreach ($results as &$r) {
-			if (!isset($r[$this->alias]['template_vars'])) {
-				return $results;
+			if (isset($r[$this->alias]['template_vars'])) {
+				$r[$this->alias]['template_vars'] = json_decode($r[$this->alias]['template_vars'], true);
 			}
-			$r[$this->alias]['template_vars'] = json_decode($r[$this->alias]['template_vars'], true);
+			if (isset($r[$this->alias]['headers'])) {
+				$r[$this->alias]['headers'] = json_decode($r[$this->alias]['headers'], true);
+			}
+			if (isset($r[$this->alias]['helpers'])) {
+				$r[$this->alias]['helpers'] = json_decode($r[$this->alias]['helpers'], true);
+			}
+			if (isset($r[$this->alias]['attachments'])) {
+				$r[$this->alias]['attachments'] = json_decode($r[$this->alias]['attachments'], true);
+			}
+			
 		}
 
 		return $results;

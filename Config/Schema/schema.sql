@@ -1,7 +1,9 @@
-DROP TABLE IF EXISTS `email_queue`;
-CREATE TABLE IF NOT EXISTS `email_queue` (
+DROP TABLE IF EXISTS `prefix_email_queue`;
+CREATE TABLE IF NOT EXISTS `prefix_email_queue` (
   `id` char(36) CHARACTER SET ascii NOT NULL,
-  `to` varchar(129) NOT NULL,
+  `to` varchar(512) NOT NULL,
+  `cc` varchar(512) DEFAULT NULL,
+  `bcc` varchar(512) DEFAULT NULL,
   `from_name` varchar(255) NOT NULL,
   `from_email` varchar(255) NOT NULL,
   `subject` varchar(255) NOT NULL,
@@ -9,7 +11,10 @@ CREATE TABLE IF NOT EXISTS `email_queue` (
   `template` varchar(50) NOT NULL,
   `layout` varchar(50) NOT NULL,
   `format` varchar(5) NOT NULL,
-  `template_vars` text NOT NULL,
+  `template_vars` longtext NOT NULL,
+  `headers` text DEFAULT NULL,
+  `helpers` text DEFAULT NULL,
+  `attachments` text DEFAULT NULL,
   `sent` tinyint(1) NOT NULL,
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `send_tries` int(2) NOT NULL,

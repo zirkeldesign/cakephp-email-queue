@@ -41,29 +41,59 @@ class SenderShell extends AppShell {
  * @access public
  */
 	public function main() {
+        
+        App::uses('CakeEmail', 'Network/Email');
+        
 		Configure::write('App.baseUrl', '/');
 		$emailQueue = ClassRegistry::init('EmailQueue.EmailQueue');
 
 		$emails = $emailQueue->getBatch($this->params['limit']);
+
 		foreach ($emails as $e) {
 			$configName = $e['EmailQueue']['config'] === 'default' ? $this->params['config'] : $e['EmailQueue']['config'];
 			$template = $e['EmailQueue']['template'] === 'default' ? $this->params['template'] : $e['EmailQueue']['template'];
 			$layout = $e['EmailQueue']['layout'] === 'default' ? $this->params['layout'] : $e['EmailQueue']['layout'];
 
 			try {
-				$email = $this->_newEmail($configName);
+                                $email = new CakeEmail([
+                                    'from' => [Configure::read('Site.email') => Configure::read('Site.title')],
+                                    'to' => $e['EmailQueue']['to'],
+                                    'subject' => $e['EmailQueue']['subject'],
+                                    'format' => $e['EmailQueue']['format'],
+                                ]);
 
+                                if($configName != 'default'){
+                                    if ($config = Configure::read($configName)) {
+                                        $email->config($config);
+                                    }
+                                }
 				if (!empty($e['EmailQueue']['from_email']) && !empty($e['EmailQueue']['from_name'])) {
 					$email->from($e['EmailQueue']['from_email'], $e['EmailQueue']['from_name']);
 				}
+                                
+                                $email->template($template, $layout);
+                                $email->to($e['EmailQueue']['to']);
+                                $email->emailFormat($e['EmailQueue']['format']);
+                                $email->viewVars($e['EmailQueue']['template_vars']);
 
-				$sent = $email
-					->to($e['EmailQueue']['to'])
-					->subject($e['EmailQueue']['subject'])
-					->template($template, $layout)
-					->emailFormat($e['EmailQueue']['format'])
-					->viewVars($e['EmailQueue']['template_vars'])
-					->send();
+                                
+                                if(is_array($e['EmailQueue']['attachments'])){
+                                    $email->attachments($e['EmailQueue']['attachments']);
+                                }
+                                
+                                if(is_array($e['EmailQueue']['headers'])){
+                                    $email->setHeaders($e['EmailQueue']['headers']);
+                                }
+                                
+                                if(is_array($e['EmailQueue']['helpers'])){
+                                    $email->helpers($e['EmailQueue']['helpers']);
+                                }
+                                
+                                //set domain to prevent emails beeing sent to junk
+//                                $email->domain("yourdomain.com");
+                                
+				$sent = $email->send();
+                                
 			} catch (SocketException $exception) {
 				$this->err($exception->getMessage());
 				$sent = false;
@@ -95,7 +125,7 @@ class SenderShell extends AppShell {
  *
  * @return CakeEmail
  **/
-	protected function _newEmail($config) {
-		return new CakeEmail($config);
+	protected function _newEmail($config) {//echo $config; die();
+		return new CakeEmail(Configure::read($config));
 	}
 }
