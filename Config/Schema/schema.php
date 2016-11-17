@@ -28,7 +28,7 @@ class EmailQueueSchema extends CakeSchema
         'template' => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 50],
         'layout' => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 50],
         'format' => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 5],
-        'template_vars' => ['type' => 'longttext', 'null' => false, 'default' => null],
+        'template_vars' => ['type' => 'text', 'null' => false, 'default' => null],
         'headers' => ['type' => 'text', 'null' => true, 'default' => null],
         'helpers' => ['type' => 'text', 'null' => true, 'default' => null],
         'attachments' => ['type' => 'text', 'null' => true, 'default' => null],

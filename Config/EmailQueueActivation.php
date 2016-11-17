@@ -41,7 +41,7 @@ class EmailQueueActivation
     public function __construct()
     {
         $this->SchemaDir = APP . 'Plugin' . DS . $this->pluginName . DS . 'Config' . DS . 'Schema';
-        $this->db = &ConnectionManager::getDataSource('default');
+        $this->db = ConnectionManager::getDataSource('default');
     }
 
     /**
@@ -59,7 +59,7 @@ class EmailQueueActivation
         $tables = $this->db->listSources();
 
         $CakeSchema = new CakeSchema();
-        $SubSchema = new CourseSchema();
+        $SubSchema = new EmailQueueSchema();
 
         $errors = [];
 
