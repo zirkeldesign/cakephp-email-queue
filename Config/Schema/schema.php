@@ -34,7 +34,7 @@ class EmailQueueSchema extends CakeSchema
         'attachments' => ['type' => 'text', 'null' => true, 'default' => null],
         'sent' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'locked' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'send_tries' => ['type' => 'boolean', 'null' => true, 'default' => null, 'length' => 2],
+        'send_tries' => ['type' => 'boolean', 'null' => false, 'default' => '0', 'length' => 2],
         'send_at' => ['type' => 'datetime', 'null' => true, 'default' => null],
         'created' => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified' => ['type' => 'datetime', 'null' => false, 'default' => null],

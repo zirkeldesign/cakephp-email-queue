@@ -3,7 +3,7 @@
  * SenderShell.php
  *
  * @author   Daniel Sturm
- * @build    2016-11-17
+ * @build    2016-11-18
  */
 
 App::uses('AppShell', 'Console/Command');
@@ -66,6 +66,11 @@ class SenderShell extends AppShell
 
         $emails = $emailQueue->getBatch($this->params['limit']);
 
+        if (!$emails) {
+            $this->out('No emails found');
+            return;
+        }
+
         foreach ($emails as $e) {
             $configName = $e['EmailQueue']['config'] === 'default' ? $this->params['config'] : $e['EmailQueue']['config'];
             $template = $e['EmailQueue']['template'] === 'default' ? $this->params['template'] : $e['EmailQueue']['template'];
@@ -84,14 +89,15 @@ class SenderShell extends AppShell
                         $email->config($config);
                     }
                 }
+
                 if (!empty($e['EmailQueue']['from_email']) && !empty($e['EmailQueue']['from_name'])) {
                     $email->from($e['EmailQueue']['from_email'], $e['EmailQueue']['from_name']);
                 }
 
-                $email->template($template, $layout);
-                $email->to($e['EmailQueue']['to']);
-                $email->emailFormat($e['EmailQueue']['format']);
-                $email->viewVars($e['EmailQueue']['template_vars']);
+                $email->template($template, $layout)
+                    ->to($e['EmailQueue']['to'])
+                    ->emailFormat($e['EmailQueue']['format'])
+                    ->viewVars($e['EmailQueue']['template_vars']);
 
                 if (is_array($e['EmailQueue']['attachments'])) {
                     $email->attachments($e['EmailQueue']['attachments']);
