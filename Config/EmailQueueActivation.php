@@ -68,6 +68,9 @@ class EmailQueueActivation
             if (!in_array($sub_table_name, $tables)) {
                 if (!$this->db->execute($this->db->createSchema($SubSchema, $table))) {
                     $errors[] = $table;
+                } else {
+                    $this->db->execute('ALTER TABLE `' . ($this->db->config['prefix']) . 'email_queue` CHANGE `id` `id` CHAR(36)  CHARACTER SET ascii  COLLATE ascii_general_ci  NOT NULL  DEFAULT \'\'');
+                    $this->db->execute('ALTER TABLE `' . ($this->db->config['prefix']) . 'email_queue` CHANGE `template_vars` `template_vars` LONGTEXT  CHARACTER SET utf8  COLLATE utf8_unicode_ci  NOT NULL');
                 }
             } elseif (CakePlugin::loaded($this->pluginName)) {
                 // add columns to existing table if neccessary
