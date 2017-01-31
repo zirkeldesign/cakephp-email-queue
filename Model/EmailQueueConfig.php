@@ -108,6 +108,12 @@ class EmailQueueConfig
     public $helpers = [];
 
     /**
+     * [$headers  description]
+     * @var [type]
+     */
+    public $headers = [];
+
+    /**
      * [__construct description]
      * @method __construct
      * @param  [type] $options [description]
@@ -350,7 +356,7 @@ class EmailQueueConfig
             'layout'      => $this->layout,
             'format'      => $this->format,
             'config'      => $this->config,
-            'headers'     => $this->headers,
+            'headers'     => isset($this->headers) ? $this->headers : null,
             'helpers'     => $this->helpers,
             'attachments' => $this->attachments,
             'send_at'     => $this->send_at,
@@ -358,6 +364,7 @@ class EmailQueueConfig
             'bcc'         => $this->bcc,
         ];
 
+        
         if ($this->from_name) {
             $email_queuq_data['from_name'] = $this->from_name;
         }
