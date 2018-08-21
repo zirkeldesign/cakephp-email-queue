@@ -154,7 +154,7 @@ class EmailQueueConfig
             $name = $email[$email_];
             $email = $email_;
         }
-        $this->from_email = $email;
+        $this->from_email = $email ?: Configure::read('Site.email');
 
         if ($name) {
             $this->from_name = $name;
