@@ -83,7 +83,7 @@ class EmailQueue extends AppModel
         $emails = $this->find('all', [
             'limit' => $size,
             'conditions' => [
-                'EmailQueue.sent' => false,
+                'EmailQueue.sent' => 0,
                 'EmailQueue.send_tries <=' => 3,
                 'EmailQueue.send_at <=' => gmdate('Y-m-d H:i:s'),
                 'EmailQueue.locked' => false,
@@ -130,7 +130,10 @@ class EmailQueue extends AppModel
     public function success($id)
     {
         $this->id = $id;
-        return $this->saveField('sent', true);
+        return $this->updateAll(
+            array('EmailQueue.sent' => 'EmailQueue.sent+1'),                    
+            array('EmailQueue.id' => $id)
+        );
     }
 
     /**
