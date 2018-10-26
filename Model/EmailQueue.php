@@ -131,7 +131,10 @@ class EmailQueue extends AppModel
     {
         $this->id = $id;
         return $this->updateAll(
-            array('EmailQueue.sent' => 'EmailQueue.sent+1'),                    
+            array(
+                'EmailQueue.sent' => 'EmailQueue.sent+1',
+                'EmailQueue.modified' => '"'.gmdate('Y-m-d H:i:s').'"'
+                ),
             array('EmailQueue.id' => $id)
         );
     }
